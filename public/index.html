@@ -4,7 +4,7 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <meta http-equiv="X-UA-Compatible" content="ie=edge" />
-    <title>登录页面</title>
+    <title>评论页面</title>
     <link
       rel="stylesheet"
       href="/node_modules/bootstrap/dist/css/bootstrap.css"
@@ -18,20 +18,20 @@
           <div class="col-md-6 col-md-offset-3">
             <div class="panel panel-danger">
               <div class="panel-heading">
-                <h2>登录页面</h2>
+                <h2>评论页面</h2>
               </div>
               <div class="panel-body">
-                <form onsubmit="login(event)">
+                <ul class="list-group"></ul>
+              </div>
+              <div class="panel-footer">
+                <form onsubmit="addComment(event)">
                   <div class="form-group">
-                    <label for="username" class="control-label">用户名</label>
-                    <input type="text" id="username" class="form-control" />
+                    <label for="content" class="control-label">内容</label>
+                    <input type="text" id="content" class="form-control" />
                   </div>
                   <div class="form-group">
-                    <label for="password" class="control-label">密码</label>
-                    <input type="text" id="password" class="form-control" />
-                  </div>
-                  <div class="form-group">
-                    <input type="submit" value="登录" class="btn btn-primary" />
+                    <input type="submit" value="发表" class="btn btn-primary" />
+                    <a href="/pay.html" class="btn btn-danger">去转账</a>
                   </div>
                 </form>
               </div>
@@ -42,17 +42,8 @@
     </div>
     <script src="/node_modules/jquery/dist/jquery.js"></script>
     <script>
-      function login(e) {
+      function addComment(e) {
         e.preventDefault();
-        let username = $("#username").val();
-        let password = $("#password").val();
-        $.post("/api/login", { username, password }).then((res) => {
-          if (res.code === 0) {
-            location.href = "/";
-          } else {
-            alert(res.error);
-          }
-        });
       }
     </script>
   </body>
