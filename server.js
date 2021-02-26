@@ -26,7 +26,7 @@ app.post("/api/login", function (req, res) {
     console.log(cardId);
     // 一般情况下会让cookie在前端不可以获取
     // 并不是解决xss的方案 只是降低受损的范围
-    // httpOnly: true 禁止浏览器访问这个cookie 
+    // httpOnly: true 禁止浏览器访问这个cookie
     // --> 虽然阻止了黑客，但用户也访问不了了，而且依然没有根本上阻止脚本注入
     res.cookie(SESSION_ID, cardId, { httpOnly: true });
     res.json({ code: 0 });
@@ -37,7 +37,8 @@ app.post("/api/login", function (req, res) {
 // 反射型xss  http://localhost:3000/welcome?type=<script>alert(document.cookie)</script>
 // chrome 发现路径存在异常（注入js脚本） 会有xss屏蔽功能
 // 诱导用户自己点开(一次性)
+// 查询参数 可以加上 encodeURIComponent 方式解决
 app.get("/welcome", function (req, res) {
-  res.send(`${req.query.type}`);
+  res.send(`${encodeURIComponent(req.query.type)}`);
 });
 app.listen(3000);
