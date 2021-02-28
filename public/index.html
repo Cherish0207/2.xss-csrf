@@ -13,20 +13,22 @@
 
   <body>
     <!-- 把输入框的图片网址放在页面里 -->
-    <input type="text" id="web">
+    <input type="text" id="web" />
     <!-- https://images2017.cnblogs.com/blog/894443/201709/894443-20170920105433618-867225449.png -->
     <button id="add">添加图片</button>
     <div class="box"></div>
     <script src="node_modules/jquery/dist/jquery.js"></script>
     <script>
-      // 第二种攻击方式，DOM-BASED 
+      // 第二种攻击方式，DOM-BASED
       // 不基于后端
       // 当用户在页面插入了内容，或者修改了某个标签的属性，document.write()
       // 改变页面结构后，会造成攻击
-      // 攻击的内容一般被叫做 xss payload xss载体  
-      $('#add').on('click', function() {
-        $('.box').html(`<img src="${$('#web').val()}">`)
-      })
+      // 攻击的内容一般被叫做 xss payload xss载体
+      // DOM-BASED这种攻击只是改变了当前客户端的页面展示。不会伤害到其他用户的客户端
+      $("#add").on("click", function () {
+        // encodeURI 转译输入的内容
+        $(".box").html(`<img src="${encodeURI($("#web").val())}">`);
+      });
     </script>
     <!-- 
       比如用户输入
