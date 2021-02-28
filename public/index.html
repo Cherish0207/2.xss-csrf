@@ -4,7 +4,7 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <meta http-equiv="X-UA-Compatible" content="ie=edge" />
-    <title>首页</title>
+    <title>评论页面</title>
     <link
       rel="stylesheet"
       href="/node_modules/bootstrap/dist/css/bootstrap.css"
@@ -12,29 +12,60 @@
   </head>
 
   <body>
-    <!-- 把输入框的图片网址放在页面里 -->
-    <input type="text" id="web" />
-    <!-- https://images2017.cnblogs.com/blog/894443/201709/894443-20170920105433618-867225449.png -->
-    <button id="add">添加图片</button>
-    <div class="box"></div>
-    <script src="node_modules/jquery/dist/jquery.js"></script>
+    <div class="container">
+      <div class="row">
+        <div class="col-md-12">
+          <div class="col-md-6 col-md-offset-3">
+            <div class="panel panel-danger">
+              <div class="panel-heading">
+                <h2>评论页面</h2>
+              </div>
+              <div class="panel-body">
+                <ul class="list-group"></ul>
+              </div>
+              <div class="panel-footer">
+                <form onsubmit="addComment(event)">
+                  <div class="form-group">
+                    <label for="content" class="control-label">内容</label>
+                    <input type="text" id="content" class="form-control" />
+                  </div>
+                  <div class="form-group">
+                    <input type="submit" value="发表" class="btn btn-primary" />
+                    <a href="/pay.html" class="btn btn-danger">去转账</a>
+                  </div>
+                </form>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <script src="/node_modules/jquery/dist/jquery.js"></script>
     <script>
-      // 第二种攻击方式，DOM-BASED
-      // 不基于后端
-      // 当用户在页面插入了内容，或者修改了某个标签的属性，document.write()
-      // 改变页面结构后，会造成攻击
-      // 攻击的内容一般被叫做 xss payload xss载体
-      // DOM-BASED这种攻击只是改变了当前客户端的页面展示。不会伤害到其他用户的客户端
-      $("#add").on("click", function () {
-        // encodeURI 转译输入的内容
-        $(".box").html(`<img src="${encodeURI($("#web").val())}">`);
-      });
+      function getList() {
+        $.get("/api/list").then((res) => {
+          if (res.code === 0) {
+            let html = ``;
+            res.comments.forEach((element) => {
+              html += `<li class="list-group-item">${element.username} ${element.content}</li>`;
+            });
+            $(".list-group").html(html);
+          }
+        });
+      }
+      getList();
+      function addComment(e) {
+        e.preventDefault();
+        // 发表功能
+        let content = $("#content").val();
+        $.post("/api/addcomment", { content }).then((res) => {
+          if (res.code === 1) {
+            location.href = "/login.html";
+          } else {
+            getList(); // 评论成功获取最新列表
+          }
+        });
+      }
     </script>
-    <!-- 
-      比如用户输入
-      xxx" onerror="alert(1)" id="
-      or
-      "><script>alert(1)</script> 
-    -->
   </body>
 </html>
