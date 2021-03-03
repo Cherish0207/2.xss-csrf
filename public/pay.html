@@ -54,9 +54,33 @@
     </div>
     <script src="/node_modules/jquery/dist/jquery.js"></script>
     <script>
-      function getUserInfo() {}
+      function getUserInfo() {
+        $.get("/api/userinfo").then((res) => {
+          if (res.code === 1) {
+            location.href = "/login.html";
+          } else {
+            let { username, money } = res.user;
+            $("#u").html(username);
+            $("#m").html(money);
+          }
+        });
+      }
       getUserInfo();
-      function transfer(e) {}
+      function transfer(e) {
+        e.preventDefault();
+        let target = $("#target").val();
+        let money = $("#money").val();
+        $.post("/api/transfer", {
+          target,
+          money,
+        }).then((res) => {
+          if (res.code === 0) {
+            getUserInfo();// 转账成功更新页面
+          } else {
+            location.href = "/login.html";
+          }
+        });
+      }
     </script>
   </body>
 </html>

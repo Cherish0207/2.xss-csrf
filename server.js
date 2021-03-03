@@ -6,7 +6,7 @@ let path = require("path"); // 帮我们拼接路径
 app.use(express.static(path.join(__dirname, "public")));
 app.use(express.static(path.join(__dirname)));
 let cookieParser = require("cookie-parser");
-app.use(cookieParser()) // req.cookies
+app.use(cookieParser()); // req.cookies
 let bodyParser = require("body-parser"); // 处理浏览器发过来的请求体
 app.use(bodyParser.urlencoded({ extended: true })); // a=1&b=2 = {a:1,b:2} =  req.body
 let userList = [
@@ -43,8 +43,8 @@ app.get("/welcome", function (req, res) {
 });
 // 用户评论信息
 let comments = [
-  { username: "zfpx", content: "欢迎大家参加珠峰架构课" },
-  { username: "zs", content: "进阿里 选珠峰" },
+  { username: "zfpx", content: "欢迎大家参加珠峰架构课", money: 10000 },
+  { username: "zs", content: "进阿里 选珠峰", money: 2000 },
 ];
 app.get("/api/list", function (req, res) {
   res.json({ code: 0, comments });
@@ -59,5 +59,39 @@ app.post("/api/addcomment", function (req, res) {
     res.json({ code: 1, error: "用户未登录" });
   }
 });
-
+app.get("/api/userinfo", function (req, res) {
+  let r = session[req.cookies[SESSION_ID]] || {};
+  let user = r.user;
+  if (user) {
+    res.json({
+      code: 0,
+      user: {
+        username: user.username,
+        money: user.money,
+      },
+    });
+  } else {
+    res.json({ code: 1, error: "用户未登录" });
+  }
+});
+app.post("/api/transfer", function (req, res) {
+  let { user } = session[req.cookies[SESSION_ID]] || {};
+  if (user) {
+    let { target, money } = req.body;
+    money = Number(money);
+    userList.forEach((u) => {
+      // 当前账户扣钱
+      if (u.username === user.username) {
+        u.money -= money;
+      }
+      // 收款人收钱
+      if (u.username === target) {
+        u.money += money;
+      }
+    });
+    res.json({ code: 0 });
+  } else {
+    res.json({ code: 1, error: "用户未登录" });
+  }
+});
 app.listen(3000);
