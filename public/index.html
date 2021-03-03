@@ -29,10 +29,6 @@
                     <label for="content" class="control-label">内容</label>
                     <input type="text" id="content" class="form-control" />
                   </div>
-                  <div class="form-group">
-                    <input type="submit" value="发表" class="btn btn-primary" />
-                    <a href="/pay.html" class="btn btn-danger">去转账</a>
-                  </div>
                 </form>
               </div>
             </div>
@@ -47,7 +43,8 @@
           if (res.code === 0) {
             let html = ``;
             res.comments.forEach((element) => {
-              html += `<li class="list-group-item">${element.username} ${element.content}</li>`;
+              // 3.直接在输出的时候过滤
+              html += `<li class="list-group-item">${encodeHtml(element.username)} ${encodeHtml(element.content)}</li>`;
             });
             $(".list-group").html(html);
           }
@@ -57,7 +54,8 @@
       function addComment(e) {
         e.preventDefault();
         // 发表功能
-        let content = $("#content").val();
+        // 1.客户端传递给服务器时 需要校验先过滤一下
+        let content = encodeHtml($("#content").val());
         $.post("/api/addcomment", { content }).then((res) => {
           if (res.code === 1) {
             location.href = "/login.html";
@@ -65,6 +63,17 @@
             getList(); // 评论成功获取最新列表
           }
         });
+      }
+      // 1.客户端传递给服务器时 需要校验先过滤一下
+      // 2.服务端在做一次过滤
+      // 3.直接在输出的时候过滤
+      function encodeHtml(str) {
+        return str
+          .replace(/&/g, "&amp;")
+          .replace(/"/g, "&quot;")
+          .replace(/'/g, "&apos;")
+          .replace(/</g, "&lt;")
+          .replace(/>/g, "&gt;");
       }
     </script>
   </body>
