@@ -34,12 +34,9 @@
                     <label for="money" class="control-label">金额</label>
                     <input type="text" id="money" class="form-control" />
                   </div>
+                  <!-- code验证码 -->
                   <div class="form-group">
-                    <label
-                      for="code"
-                      class="control-label"
-                      id="picture"
-                    ></label>
+                    <label id="picture" for="code" class="control-label"></label>
                     <input type="text" id="code" class="form-control" />
                   </div>
                   <div class="form-group">
@@ -59,9 +56,10 @@
           if (res.code === 1) {
             location.href = "/login.html";
           } else {
-            let { username, money } = res.user;
+            let { username, money, svg } = res.user;
             $("#u").html(username);
             $("#m").html(money);
+            $("#picture").html(svg);
           }
         });
       }
@@ -70,9 +68,11 @@
         e.preventDefault();
         let target = $("#target").val();
         let money = $("#money").val();
+        let code = $("#code").val();
         $.post("/api/transfer", {
           target,
           money,
+          code
         }).then((res) => {
           if (res.code === 0) {
             getUserInfo();// 转账成功更新页面

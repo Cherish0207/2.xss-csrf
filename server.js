@@ -1,6 +1,7 @@
 // 当用户登录后 返回一个标识 cookie
 
 let express = require("express");
+let svgCaptcha = require("svg-captcha");
 let app = express();
 let path = require("path"); // 帮我们拼接路径
 app.use(express.static(path.join(__dirname, "public")));
@@ -61,6 +62,9 @@ app.post("/api/addcomment", function (req, res) {
 });
 app.get("/api/userinfo", function (req, res) {
   let r = session[req.cookies[SESSION_ID]] || {};
+  let { data /*svg内容*/, text /*验证码对应的结果*/ } = svgCaptcha.create();
+  r.text = text; // 下次请求时应该拿到返回的结果和上次存好的结果做对比
+  // console.log(text);
   let user = r.user;
   if (user) {
     res.json({
@@ -68,6 +72,7 @@ app.get("/api/userinfo", function (req, res) {
       user: {
         username: user.username,
         money: user.money,
+        svg: data,
       },
     });
   } else {
@@ -75,21 +80,26 @@ app.get("/api/userinfo", function (req, res) {
   }
 });
 app.post("/api/transfer", function (req, res) {
-  let { user } = session[req.cookies[SESSION_ID]] || {};
+  let { user, text } = session[req.cookies[SESSION_ID]] || {};
   if (user) {
-    let { target, money } = req.body;
-    money = Number(money);
-    userList.forEach((u) => {
-      // 当前账户扣钱
-      if (u.username === user.username) {
-        u.money -= money;
-      }
-      // 收款人收钱
-      if (u.username === target) {
-        u.money += money;
-      }
-    });
-    res.json({ code: 0 });
+    let { target, money, code } = req.body;
+    if (code && code === text) {
+      // 如果有验证码 并且验证码和我给你的一致->转钱
+      money = Number(money);
+      userList.forEach((u) => {
+        // 当前账户扣钱
+        if (u.username === user.username) {
+          u.money -= money;
+        }
+        // 收款人收钱
+        if (u.username === target) {
+          u.money += money;
+        }
+      });
+      res.json({ code: 0 });
+    } else {
+      res.json({ code: 1, error: "验证不正确" });
+    }
   } else {
     res.json({ code: 1, error: "用户未登录" });
   }
