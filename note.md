@@ -8,21 +8,28 @@
   如钓鱼网站，给个吸引他的网站
   解决方式: 转账前输入验证码，设置 vpn 禁止访问某些网站
 
-  怎么拿到 cookie 的？
-  第三方网站 其实拿不到用户 cookie 当往 3000 端口提交内容时自动会动提交 cookie
-  表单提交没有跨域问题，同源问题只在 ajax 上
+怎么拿到 cookie 的？
 
-  实现一个钓鱼网站，
-  1.node server.csrf.js 或者 npm run csrf 开启钓鱼网站 3001 服务
-  2.node server.js 或者 npm run start 开启目标 3000 服务 3.模拟用户访问 localhost:3000,登陆成功 4.模拟用户访问 localhost:3001/fish.html 钓鱼连接 5.发现账户余额减少
+第三方网站 其实拿不到用户 cookie\
+当往 3000 端口提交内容时自动会动提交 cookie\
+表单提交没有跨域问题，同源问题只在 ajax 上
 
-  防止 csrf 攻击 
-  1.添加验证码 (体验不好)
-  2.referer: 判断来源，如果是从 3001 发到 3000 的，断定是伪造的
-  (不靠谱可以通过 node 自己发请求来实现伪造)
-  延伸：host请求的主机
-  3.token
-  12306 防御的不是盗取用户信息，而是机器人并发量
+实现一个钓鱼网站，
+
+1. node server.csrf.js 或者 npm run csrf 开启钓鱼网站 3001 服务
+2. node server.js 或者 npm run start 开启目标 3000 服务
+3. 模拟用户访问 localhost:3000,登陆成功
+4. 模拟用户访问 localhost:3001/fish.html 钓鱼连接
+5. 发现账户余额减少
+
+防止 csrf 攻击
+
+1. 添加验证码 (体验不好)
+2. referer: 判断来源，如果是从 3001 发到 3000 的，断定是伪造的
+   (不靠谱可以通过 node 自己发请求来实现伪造)
+   延伸：host 请求的主机
+3. token
+   12306 防御的不是盗取用户信息，而是机器人并发量
 
 后台 express，前台 jquery
 
