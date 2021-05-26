@@ -36,7 +36,11 @@
                   </div>
                   <!-- code验证码 -->
                   <div class="form-group">
-                    <label id="picture" for="code" class="control-label"></label>
+                    <label
+                      id="picture"
+                      for="code"
+                      class="control-label"
+                    ></label>
                     <input type="text" id="code" class="form-control" />
                   </div>
                   <div class="form-group">
@@ -69,13 +73,15 @@
         let target = $("#target").val();
         let money = $("#money").val();
         let code = $("#code").val();
+        let token = document.cookie.match(/connect.sid=([^;]*)/) || [];
         $.post("/api/transfer", {
           target,
           money,
-          code
+          code,
+          token: "my_" + token[1],
         }).then((res) => {
           if (res.code === 0) {
-            getUserInfo();// 转账成功更新页面
+            getUserInfo(); // 转账成功更新页面
           } else {
             location.href = "/login.html";
           }

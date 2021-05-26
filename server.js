@@ -84,23 +84,27 @@ app.post("/api/transfer", function (req, res) {
   let referer = req.headers["referer"] || "";
   if (referer.includes("http://localhost:3000")) {
     if (user) {
-      let { target, money, code } = req.body;
-      if (code && code === text) {
-        // 如果有验证码 并且验证码和我给你的一致->转钱
-        money = Number(money);
-        userList.forEach((u) => {
-          // 当前账户扣钱
-          if (u.username === user.username) {
-            u.money -= money;
-          }
-          // 收款人收钱
-          if (u.username === target) {
-            u.money += money;
-          }
-        });
-        res.json({ code: 0 });
+      let { target, money, code, token } = req.body;
+      if ("my_" + req.cookies[SESSION_ID] === token) {
+        if (code && code === text) {
+          // 如果有验证码 并且验证码和我给你的一致->转钱
+          money = Number(money);
+          userList.forEach((u) => {
+            // 当前账户扣钱
+            if (u.username === user.username) {
+              u.money -= money;
+            }
+            // 收款人收钱
+            if (u.username === target) {
+              u.money += money;
+            }
+          });
+          res.json({ code: 0 });
+        } else {
+          res.json({ code: 2, error: "验证不正确" });
+        }
       } else {
-        res.json({ code: 1, error: "验证不正确" });
+        res.json({ code: 1, error: "没有token" });
       }
     } else {
       res.json({ code: 1, error: "用户未登录" });
