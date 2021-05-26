@@ -48,7 +48,9 @@
             let html = ``;
             res.comments.forEach((element) => {
               // 3.直接在输出的时候过滤
-              html += `<li class="list-group-item">${encodeHtml(element.username)} ${encodeHtml(element.content)}</li>`;
+              html += `<li class="list-group-item">${encodeHtml(
+                element.username
+              )} ${element.content}</li>`;
             });
             $(".list-group").html(html);
           }
@@ -59,7 +61,7 @@
         e.preventDefault();
         // 发表功能
         // 1.客户端传递给服务器时 需要校验先过滤一下
-        let content = encodeHtml($("#content").val());
+        let content = $("#content").val();
         $.post("/api/addcomment", { content }).then((res) => {
           if (res.code === 1) {
             location.href = "/login.html";
